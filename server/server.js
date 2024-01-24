@@ -53,13 +53,13 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const secretKey = crypto.randomBytes(64).toString("hex");
-const isSecure = process.env.NODE_ENV === "production";
+// const isSecure = process.env.NODE_ENV === "production";
 app.use(
   session({
     secret: secretKey,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: isSecure },
+    cookie: { secure: process.env.NODE_ENV === "production", sameSite: 'none' },
   })
 );
 
