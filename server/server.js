@@ -17,7 +17,7 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST"],
+    // methods: ["GET", "POST"],
     credentials: true,
   },
 });
@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST"],
+    // methods: ["GET", "POST"],
     credentials: true,
   })
 );
@@ -242,17 +242,16 @@ app.post("/api/logon", async (req, res) => {
   const hashedPasscode = await getHashedPasscodeFromDB();
   if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
     req.session.isLoggedOn = true;
-    console.log("Logon session:", req.session);
+    // console.log("Logon session:", req.session);
     req.session.save((err) => {
       if (err) {
         console.error("Session save error:", err);
         res.status(500).send("An error occurred while saving the session.");
       } else {
-        console.log("Saved Logon session:", req.session);
+        console.log("Logon session:", req.session);
         res.sendStatus(200);
       }
     });
-    // res.sendStatus(200);
   } else {
     res.sendStatus(401);
   }
