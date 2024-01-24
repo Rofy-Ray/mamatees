@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const MongoStore = require('connect-mongo')(session);
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const dbUtils = require("./dbUtils");
@@ -53,13 +54,14 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const secretKey = crypto.randomBytes(64).toString("hex");
-// const isSecure = process.env.NODE_ENV === "production";
+const isSecure = process.env.NODE_ENV === "production";
 app.use(
   session({
     secret: secretKey,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === "production", sameSite: 'none' },
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    cookie: { secure: isSecure, sameSite: 'none' },
   })
 );
 
