@@ -6,9 +6,8 @@ const crypto = require("crypto");
 
 async function connectDB() {
   try {
-    const dbClient = await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log("MongoDB Database connected...");
-    return dbClient;
   } catch (err) {
     console.error(err.message);
     process.exit(1);

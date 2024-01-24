@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
-const MongoStore = require('connect-mongo');
+const MongoStore = require("connect-mongo")(session);
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const dbUtils = require("./dbUtils");
@@ -53,8 +53,6 @@ if (process.env.NODE_ENV === "development") {
   app.use(express.static("public"));
 }
 
-const dbClientPromise = dbUtils.connectDB();
-
 const secretKey = crypto.randomBytes(64).toString("hex");
 const isSecure = process.env.NODE_ENV === "production";
 app.use(
@@ -62,10 +60,16 @@ app.use(
     secret: secretKey,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ dbClientPromise }),
-    cookie: { secure: isSecure, sameSite: 'none' },
+    store: new MongoStore({
+      url: process.env.MONGODB_URI,
+      ttl: 14 * 24 * 60 * 60,
+      autoRemove: "native",
+    }),
+    cookie: { secure: isSecure, sameSite: "none" },
   })
 );
+
+dbUtils.connectDB();
 
 const squareClient = new Client({
   environment: Environment.Sandbox,
@@ -237,7 +241,7 @@ app.post("/api/logon", async (req, res) => {
   const hashedPasscode = await getHashedPasscodeFromDB();
   if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
     req.session.isLoggedOn = true;
-    console.log('Logon session:', req.session);
+    console.log("Logon session:", req.session);
     res.sendStatus(200);
   } else {
     res.sendStatus(401);
@@ -245,7 +249,7 @@ app.post("/api/logon", async (req, res) => {
 });
 
 app.get("/api/checkLogonStatus", (req, res) => {
-  console.log('Check logon status session:', req.session);
+  console.log("Check logon status session:", req.session);
   res.json({ isLoggedOn: req.session.isLoggedOn || false });
 });
 
