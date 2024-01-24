@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
-const MongoStore = require("connect-mongo")(session);
+const MongoStore = require("connect-mongo");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const dbUtils = require("./dbUtils");
@@ -60,9 +60,9 @@ app.use(
     secret: secretKey,
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({
-      url: process.env.MONGODB_URI,
-      ttl: 14 * 24 * 60 * 60,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      ttl: 7 * 24 * 60 * 60,
       autoRemove: "native",
     }),
     cookie: { secure: isSecure, sameSite: "none" },
