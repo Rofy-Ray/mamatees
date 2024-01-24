@@ -48,7 +48,9 @@ app.use(
 );
 app.use("/api/stripewebhook", express.raw({ type: "application/json" }));
 app.use(express.json());
-app.use(express.static("public"));
+if (process.env.NODE_ENV === "development") {
+  app.use(express.static("public"));
+}
 
 const secretKey = crypto.randomBytes(64).toString("hex");
 const isSecure = process.env.NODE_ENV === "production";
@@ -246,5 +248,16 @@ app.get("/api/checkLogonStatus", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Server is running...");
 });
+
+// app.get("/*", function (req, res) {
+//   res.sendFile(
+//     path.join(__dirname, "../client/public/index.html"),
+//     function (err) {
+//       if (err) {
+//         res.status(500).send(err);
+//       }
+//     }
+//   );
+// });
 
 server.listen(port, () => console.log(`Server started on port ${port}...`));
