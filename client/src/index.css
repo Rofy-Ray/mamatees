@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Englebert&family=League+Spartan:wght@100;200;300;400&family=Noto+Sans+Mono&display=swap');
+
+body,
+#root {
+  margin: 0;
+  font-family: 'League Spartan', sans-serif;
+  font-size: large;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #292a2c;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: 50px;
+}
+
+.navbar-brand {
+  font-family: 'Englebert', cursive;
+  font-size: xx-large !important;
+}
+
+.btn {
+  font-family: 'Noto Sans Mono', monospace;
+}
+
+.filter-options {
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.filter-options>* {
+  margin: 10px 5px;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.content {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.cart {
+  font-family: 'League Spartan', sans-serif;
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 350px;
+  right: 0;
+  height: 100%;
+  background-color: #292a2c;
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.cart-modal {
+  max-width: 100%;
+}
+
+.cart-modal .cart {
+  text-align: center;
+  padding: 0;
+  margin: auto;
+}
+
+.cart-modal .list-group-item {
+  width: 100%;
+  margin: auto;
+}
+
+.food-list .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.food-list .row .col {
+  display: flex;
+  justify-content: center;
+}
+
+.food-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 15px;
+}
+
+.food-card .card-body {
+  flex-grow: 1;
+}
+
+.food-image {
+  height: 300px;
+  overflow: hidden;
+}
+
+.food-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.food-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 50%;
+}
+
+.food-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 15px;
+}
+
+.order-card .card-body {
+  flex-grow: 1;
+}
+
+.order-list .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.order-list .row .col {
+  display: flex;
+  justify-content: center;
+}
+
+.order-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 50%;
+}
+
+.price-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-grow: 1;
+}
+
+.food-price {
+  margin: 0;
+  color: #10caf0;
+  font-weight: bolder;
+}
+
+.food-name {
+  color: lightcyan !important;
+  font-weight: bolder !important;
+}
+
+.modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.modal-title {
+  font-family: 'Englebert', cursive;
+  font-size: x-large !important;
+}
+
+#form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+#payment-form {
+  width: 300px;
+  margin: auto;
+}
+
+#card-container {
+  margin-top: 45px;
+  min-height: 90px;
+}
+
+@media screen and (max-width: 500px) {
+  #card-container {
+    min-height: 140px;
+  }
+}
+
+#card-button {
+  color: #ffffff;
+  background-color: #006aff;
+  border-radius: 5px;
+  cursor: pointer;
+  border-style: none;
+  user-select: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  padding: 12px;
+  width: 100%;
+  box-shadow: 1px;
+}
+
+#card-button:active {
+  background-color: rgb(0, 85, 204);
+}
+
+#card-button:disabled {
+  background-color: rgb(109, 179, 244);
+  color: rgba(0, 0, 0, 0.75);
+}
+
+@media screen and (max-width: 515px) {
+  .navbar-brand {
+    font-size: x-large !important;
+  }
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #212529;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Englebert', cursive;
+  font-size: large;
+}
