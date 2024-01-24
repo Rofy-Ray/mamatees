@@ -111,6 +111,9 @@ function App() {
         <Route path="/squarepayment">
           <SquarePaymentForm />
         </Route>
+        <Route path="*">
+          <Redirect to="/" />
+        </Route>
       </Switch>
       <Footer />
     </div>
