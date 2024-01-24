@@ -58,7 +58,7 @@ const isSecure = process.env.NODE_ENV === "production";
 app.use(
   session({
     secret: secretKey,
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
