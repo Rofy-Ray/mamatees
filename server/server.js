@@ -235,6 +235,7 @@ app.post("/api/logon", async (req, res) => {
   const hashedPasscode = await getHashedPasscodeFromDB();
   if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
     req.session.isLoggedOn = true;
+    console.log('Logon session:', req.session);
     res.sendStatus(200);
   } else {
     res.sendStatus(401);
@@ -242,6 +243,7 @@ app.post("/api/logon", async (req, res) => {
 });
 
 app.get("/api/checkLogonStatus", (req, res) => {
+  console.log('Check logon status session:', req.session);
   res.json({ isLoggedOn: req.session.isLoggedOn || false });
 });
 
