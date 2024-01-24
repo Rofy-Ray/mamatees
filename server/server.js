@@ -59,7 +59,7 @@ app.use(
   session({
     secret: secretKey,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       ttl: 1 * 24 * 60 * 60,
