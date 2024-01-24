@@ -53,6 +53,8 @@ if (process.env.NODE_ENV === "development") {
   app.use(express.static("public"));
 }
 
+const dbClientPromise = dbUtils.connectDB();
+
 const secretKey = crypto.randomBytes(64).toString("hex");
 const isSecure = process.env.NODE_ENV === "production";
 app.use(
@@ -64,8 +66,6 @@ app.use(
     cookie: { secure: isSecure, sameSite: 'none' },
   })
 );
-
-const dbClientPromise = dbUtils.connectDB();
 
 const squareClient = new Client({
   environment: Environment.Sandbox,
