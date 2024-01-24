@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const MongoStore = require('connect-mongo');
-const mongoose = require("mongoose");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const dbUtils = require("./dbUtils");
@@ -61,12 +60,12 @@ app.use(
     secret: secretKey,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongooseConnection: mongoose.connection }),
+    store: MongoStore.create({ dbClientPromise }),
     cookie: { secure: isSecure, sameSite: 'none' },
   })
 );
 
-dbUtils.connectDB();
+const dbClientPromise = dbUtils.connectDB();
 
 const squareClient = new Client({
   environment: Environment.Sandbox,
