@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
-const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const dbUtils = require("./dbUtils");
 const FoodItem = require("./models/FoodItem");
@@ -39,7 +38,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const secretKey = crypto.randomBytes(64).toString("hex");
+const secretKey = process.env.SESSION_SECRET || '1858f945b571cb256e4728a0779efc99bacd7b70da86f9c3b992a1661206057aa601b156690377c7d5f8d6300e9278d944120bc9f583f9899246636177e1f38e';
 const isSecure = process.env.NODE_ENV === "production";
 app.use(
   session({
