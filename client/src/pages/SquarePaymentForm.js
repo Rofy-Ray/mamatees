@@ -10,7 +10,10 @@ function SquarePaymentForm() {
     useProcessSquarePayment();
   const [card, setCard] = useState(null);
   const scriptLoaded = useExternalScripts({
-    url: "https://sandbox.web.squarecdn.com/v1/square.js",
+    url:
+      process.env.NODE_ENV === "production"
+        ? "https://web.squarecdn.com/v1/square.js"
+        : "https://sandbox.web.squarecdn.com/v1/square.js",
   });
 
   const handleCardNonce = useCallback(async () => {
