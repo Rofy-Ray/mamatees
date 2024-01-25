@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ListGroup,
   Button,
@@ -26,6 +26,13 @@ function Cart({ cart, updateQuantity, setShowCart }) {
     (total, item) => total + item.price * item.quantity,
     0
   );
+
+  useEffect(() => {
+    if (total === 0) {
+      setSelectedPaymentMethod(null);
+      setButtonText("");
+    }
+  }, [total]);
 
   const fontSize = windowWidth <= 768 ? "larger" : "large";
 
