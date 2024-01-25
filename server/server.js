@@ -58,15 +58,15 @@ const isSecure = process.env.NODE_ENV === "production";
 app.use(
   session({
     secret: secretKey,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       ttl: 1 * 24 * 60 * 60,
       autoRemove: "native",
       touchAfter: 24 * 3600,
     }),
-    cookie: { secure: isSecure, sameSite: "none" },
+    cookie: { secure: isSecure, sameSite: "none", httpOnly: true, path: '/', },
   })
 );
 
@@ -243,17 +243,15 @@ app.post("/api/logon", async (req, res) => {
   if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
     req.session.isLoggedOn = true;
     // console.log("Logon session:", req.session);
-    req.session.save();
-    res.sendStatus(200);
-    // req.session.save((err) => {
-    //   if (err) {
-    //     console.error("Session save error:", err);
-    //     res.status(500).send("An error occurred while saving the session.");
-    //   } else {
-    //     console.log("Logon session:", req.session);
-    //     res.sendStatus(200);
-    //   }
-    // });
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        res.status(500).send("An error occurred while saving the session.");
+      } else {
+        console.log("Logon session:", req.session);
+        res.sendStatus(200);
+      }
+    });
   } else {
     res.sendStatus(401);
   }
