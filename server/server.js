@@ -17,7 +17,6 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: process.env.CLIENT_URL,
-    // methods: ["GET", "POST"],
     credentials: true,
   },
 });
@@ -39,19 +38,6 @@ io.on("connection", (socket) => {
     console.log("Client disconnected.");
   });
 });
-
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    // methods: ["GET", "POST"],
-    credentials: true,
-  })
-);
-app.use("/api/stripewebhook", express.raw({ type: "application/json" }));
-app.use(express.json());
-if (process.env.NODE_ENV === "development") {
-  app.use(express.static("public"));
-}
 
 const secretKey = crypto.randomBytes(64).toString("hex");
 const isSecure = process.env.NODE_ENV === "production";
@@ -75,6 +61,18 @@ app.use(
     },
   })
 );
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
+app.use("/api/stripewebhook", express.raw({ type: "application/json" }));
+app.use(express.json());
+if (process.env.NODE_ENV === "development") {
+  app.use(express.static("public"));
+}
 
 dbUtils.connectDB();
 
@@ -251,12 +249,13 @@ async function getHashedPasscodeFromDB() {
 app.post("/api/logon", async (req, res) => {
   const { passcode } = req.body;
   const hashedPasscode = await getHashedPasscodeFromDB();
+
   if (!hashedPasscode) {
     return res
       .status(500)
       .send("An error occurred while fetching the passcode.");
   }
-  // if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
+
   try {
     const isMatch = await bcrypt.compare(passcode, hashedPasscode);
     if (isMatch) {
@@ -281,7 +280,6 @@ app.post("/api/logon", async (req, res) => {
 });
 
 app.get("/api/checkLogonStatus", (req, res) => {
-  req.session.reload();
   console.log("Check logon status session:", req.session);
   res.json({ isLoggedOn: req.session.isLoggedOn || false });
 });
