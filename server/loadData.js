@@ -110,7 +110,7 @@ const foodItems = [
     unit_price: 3.0,
     image:
       "https://res.cloudinary.com/dwenrtqrv/image/upload/f_auto,q_auto/v1/mamatees/xw8hbzcvzr79cwbbzwwu",
-    type: "entree",
+    type: "appetizer",
   },
   {
     name: "Blue Kickin Chicken Basket",
