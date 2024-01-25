@@ -66,7 +66,7 @@ app.use(
       autoRemove: "native",
       touchAfter: 24 * 3600,
     }),
-    cookie: { secure: isSecure, sameSite: "none", httpOnly: true, path: '/', },
+    cookie: { secure: isSecure, sameSite: "lax", httpOnly: true, path: "/" },
   })
 );
 
@@ -231,29 +231,47 @@ app.get("/api/orders", (req, res) => {
 });
 
 async function getHashedPasscodeFromDB() {
-  const passcodeData = await Passcode.findOne({
-    _id: "693e8274df128e22b0dc1dd0784cd5e3",
-  });
-  return passcodeData ? passcodeData.passcode : null;
+  try {
+    const passcodeData = await Passcode.findOne({
+      _id: "693e8274df128e22b0dc1dd0784cd5e3",
+    });
+    return passcodeData ? passcodeData.passcode : null;
+  } catch (err) {
+    console.error("Error fetching passcode:", err);
+    return null;
+  }
 }
 
 app.post("/api/logon", async (req, res) => {
   const { passcode } = req.body;
   const hashedPasscode = await getHashedPasscodeFromDB();
-  if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
-    req.session.isLoggedOn = true;
-    // console.log("Logon session:", req.session);
-    req.session.save((err) => {
-      if (err) {
-        console.error("Session save error:", err);
-        res.status(500).send("An error occurred while saving the session.");
-      } else {
-        console.log("Logon session:", req.session);
-        res.sendStatus(200);
-      }
-    });
-  } else {
-    res.sendStatus(401);
+  if (!hashedPasscode) {
+    return res
+      .status(500)
+      .send("An error occurred while fetching the passcode.");
+  }
+
+  // if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
+  try {
+    const isMatch = await bcrypt.compare(passcode, hashedPasscode);
+    if (isMatch) {
+      req.session.isLoggedOn = true;
+      // console.log("Logon session:", req.session);
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          res.status(500).send("An error occurred while saving the session.");
+        } else {
+          console.log("Logon session:", req.session);
+          res.sendStatus(200);
+        }
+      });
+    } else {
+      res.sendStatus(401);
+    }
+  } catch (err) {
+    console.error("Error comparing passcodes:", err);
+    res.status(500).send("An error occurred while comparing passcodes.");
   }
 });
 
