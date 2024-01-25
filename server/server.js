@@ -79,7 +79,7 @@ if (process.env.NODE_ENV === "development") {
 dbUtils.connectDB();
 
 const squareClient = new Client({
-  environment: Environment.Sandbox,
+  environment: process.env.NODE_ENV === 'production' ? Environment.Production : Environment.Sandbox,
   accessToken: process.env.SQUARE_ACCESS_TOKEN,
 });
 
