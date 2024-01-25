@@ -40,9 +40,11 @@ io.on("connection", (socket) => {
 
 const secretKey = process.env.SESSION_SECRET || '1858f945b571cb256e4728a0779efc99bacd7b70da86f9c3b992a1661206057aa601b156690377c7d5f8d6300e9278d944120bc9f583f9899246636177e1f38e';
 const isSecure = process.env.NODE_ENV === "production";
+const sameSite = isSecure ? "none" : "lax";
 app.use(
   session({
     secret: secretKey,
+    name: 'mamatees',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
@@ -53,7 +55,7 @@ app.use(
     }),
     cookie: {
       secure: isSecure,
-      sameSite: "none",
+      sameSite: sameSite,
       httpOnly: true,
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
@@ -259,7 +261,6 @@ app.post("/api/logon", async (req, res) => {
     const isMatch = await bcrypt.compare(passcode, hashedPasscode);
     if (isMatch) {
       req.session.isLoggedOn = true;
-      // console.log("Logon session:", req.session);
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
