@@ -256,7 +256,6 @@ app.post("/api/logon", async (req, res) => {
       .status(500)
       .send("An error occurred while fetching the passcode.");
   }
-
   // if (hashedPasscode && (await bcrypt.compare(passcode, hashedPasscode))) {
   try {
     const isMatch = await bcrypt.compare(passcode, hashedPasscode);
@@ -282,6 +281,7 @@ app.post("/api/logon", async (req, res) => {
 });
 
 app.get("/api/checkLogonStatus", (req, res) => {
+  req.session.reload();
   console.log("Check logon status session:", req.session);
   res.json({ isLoggedOn: req.session.isLoggedOn || false });
 });
