@@ -66,7 +66,13 @@ app.use(
       autoRemove: "native",
       touchAfter: 24 * 3600,
     }),
-    cookie: { secure: isSecure, sameSite: "none", httpOnly: true, path: "/" },
+    cookie: {
+      secure: isSecure,
+      sameSite: "none",
+      httpOnly: true,
+      path: "/",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   })
 );
 
