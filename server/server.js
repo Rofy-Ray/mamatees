@@ -47,6 +47,7 @@ app.use(
     name: 'mamatees',
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       ttl: 1 * 24 * 60 * 60,
