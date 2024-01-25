@@ -16,20 +16,17 @@ const Logon = ({ setIsLoggedOn }) => {
         { passcode },
         { withCredentials: true }
       );
-      console.log('Logon response status:', response.status);
       if (response.status === 200) {
         const statusResponse = await axios.get(
           `${process.env.REACT_APP_SERVER_URL}/api/checkLogonStatus`,
           { withCredentials: true }
         );
-        console.log('Logon status:', statusResponse.data.isLoggedOn);
         if (statusResponse.data.isLoggedOn) {
           setIsLoggedOn(true);
           localStorage.setItem("isLoggedOn", "true");
         }
       }
     } catch (error) {
-      console.log('Error in handleSubmit:', error);
       if (error.response && error.response.status === 401) {
         setError("Invalid passcode. Please try again.");
       } else {

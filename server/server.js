@@ -264,10 +264,8 @@ app.post("/api/logon", async (req, res) => {
       req.session.isLoggedOn = true;
       req.session.save((err) => {
         if (err) {
-          console.error("Session save error:", err);
           res.status(500).send("An error occurred while saving the session.");
         } else {
-          console.log("Logon session:", req.session);
           res.sendStatus(200);
         }
       });
@@ -275,13 +273,11 @@ app.post("/api/logon", async (req, res) => {
       res.sendStatus(401);
     }
   } catch (err) {
-    console.error("Error comparing passcodes:", err);
     res.status(500).send("An error occurred while comparing passcodes.");
   }
 });
 
 app.get("/api/checkLogonStatus", (req, res) => {
-  console.log("Check logon status session:", req.session);
   res.json({ isLoggedOn: req.session.isLoggedOn || false });
 });
 
