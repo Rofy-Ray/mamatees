@@ -42,10 +42,17 @@ function Dashboard() {
     return <Redirect to="/logon" />;
   }
 
-  const completeOrder = (orderId) => {
-    const newOrders = orders.filter((order) => order.id !== orderId);
-    setOrders(newOrders);
-    localStorage.setItem("MAMA_TEES_ORDERS", JSON.stringify(newOrders));
+  const completeOrder = async (orderId) => {
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}/api/orders/${orderId}`
+      );
+      const newOrders = orders.filter((order) => order.id !== orderId);
+      setOrders(newOrders);
+      localStorage.setItem("MAMA_TEES_ORDERS", JSON.stringify(newOrders));
+    } catch (error) {
+      console.error("Failed to complete order:", error);
+    }
   };
 
   return (

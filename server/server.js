@@ -161,7 +161,6 @@ app.post(
         timestamp: Date.now(),
       };
       orders.push(newOrder);
-      console.log(orders);
       io.emit("newOrder", newOrder);
     }
 
@@ -207,7 +206,6 @@ app.post(
         };
 
         orders.push(newOrder);
-        console.log(orders);
         io.emit("newOrder", newOrder);
       }
     }
@@ -228,7 +226,6 @@ app.post("/api/payCash", async (req, res) => {
       payment: "cash",
     };
     orders.push(newOrder);
-    console.log(orders);
     io.emit("newOrder", newOrder);
 
     res.json({ id: orderId });
@@ -239,6 +236,12 @@ app.post("/api/payCash", async (req, res) => {
 
 app.get("/api/orders", (req, res) => {
   res.json(orders);
+});
+
+app.delete("/api/orders/:id", (req, res) => {
+  const { id } = req.params;
+  orders = orders.filter((order) => order.id !== id);
+  res.status(204).end();
 });
 
 async function getHashedPasscodeFromDB() {
