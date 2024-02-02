@@ -14,7 +14,7 @@ import usePayCash from "../hooks/usePayCash";
 import useWindowWidth from "../hooks/useWindowWidth";
 import { useHistory } from "react-router-dom";
 
-function Cart({ cart, updateQuantity, setShowCart }) {
+function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
   const windowWidth = useWindowWidth();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isSquareLoading, setIsSquareLoading] = useState(false);
@@ -40,7 +40,7 @@ function Cart({ cart, updateQuantity, setShowCart }) {
     setIsSquareLoading(true);
     history.push({
       pathname: "/squarepayment",
-      state: { total: total },
+      state: { total: total, notes: notes },
     });
   };
 
@@ -116,6 +116,18 @@ function Cart({ cart, updateQuantity, setShowCart }) {
         >
           Total: ${total.toFixed(2)}
         </p>
+        {cart.length > 0 && (
+          <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+            <Form.Label>Notes</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              style={{ borderRadius: "10px", width: "100%" }}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </Form.Group>
+        )}
       </div>
       <div>
         <p>Select Payment Method</p>
@@ -160,7 +172,7 @@ function Cart({ cart, updateQuantity, setShowCart }) {
             if (selectedPaymentMethod === "Card") {
               startSquarePayment();
             } else if (selectedPaymentMethod === "Cash") {
-              payCash(cart, history, "cash");
+              payCash(cart, history, "cash", notes);
             }
           }}
         >

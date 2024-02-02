@@ -169,7 +169,7 @@ app.post(
 );
 
 app.post("/api/processSquarePayment", async (req, res) => {
-  const { idempotencyKey, nonce, amountMoney } = req.body;
+  const { idempotencyKey, nonce, amountMoney, notes } = req.body;
 
   try {
     const {
@@ -203,6 +203,7 @@ app.post(
           id: uuidv4(),
           products: payment.lineItems,
           timestamp: Date.now(),
+          notes: notes,
         };
 
         orders.push(newOrder);
@@ -215,7 +216,7 @@ app.post(
 );
 
 app.post("/api/payCash", async (req, res) => {
-  const { products } = req.body;
+  const { products, notes } = req.body;
 
   try {
     const orderId = uuidv4();
@@ -224,6 +225,7 @@ app.post("/api/payCash", async (req, res) => {
       products: products.map((product) => ({ ...product, uid: uuidv4() })),
       timestamp: Date.now(),
       payment: "cash",
+      notes: notes,
     };
     orders.push(newOrder);
     io.emit("newOrder", newOrder);
@@ -288,6 +290,17 @@ app.post("/api/logon", async (req, res) => {
 app.get("/api/checkLogonStatus", (req, res) => {
   res.json({ isLoggedOn: req.session.isLoggedOn || false });
 });
+
+app.post("/api/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      res.status(500).send("An error occurred while destroying the session.");
+    } else {
+      res.sendStatus(200);
+    }
+  });
+});
+
 
 app.get("/", (req, res) => {
   res.send("Server is running...");

@@ -21,6 +21,9 @@ function App() {
     JSON.parse(localStorage.getItem("MAMA_TEES_CART")) || []
   );
   const [showCart, setShowCart] = useState(false);
+  const [notes, setNotes] = useState(
+    localStorage.getItem("MAMA_TEES_NOTES") || ""
+  );
   const [isLoggedOn, setIsLoggedOn] = useState(
     localStorage.getItem("isLoggedOn") === "true"
   );
@@ -35,9 +38,15 @@ function App() {
   }, [isLoggedOn, cart]);
 
   useEffect(() => {
+    localStorage.setItem("MAMA_TEES_NOTES", notes);
+  }, [notes]);
+
+  useEffect(() => {
     if (location.pathname === "/success") {
       setCart([]);
+      setNotes("");
       localStorage.removeItem("MAMA_TEES_CART");
+      localStorage.removeItem("MAMA_TEES_NOTES");
     }
   }, [location]);
 
@@ -52,9 +61,19 @@ function App() {
   }, [location]);
 
   const handleLogout = () => {
-    setIsLoggedOn(false);
-    localStorage.setItem("isLoggedOn", "false");
-    history.push("/logon");
+    fetch(`${process.env.REACT_APP_SERVER_URL}/api/logout`, {
+      method: "POST",
+    })
+      .then((res) => {
+        if (res.ok) {
+          setIsLoggedOn(false);
+          localStorage.setItem("isLoggedOn", "false");
+          history.push("/logon");
+        } else {
+          console.error("Logout failed");
+        }
+      })
+      .catch((err) => console.error(err));
   };
 
   const updateQuantity = (itemId, quantity) => {
@@ -89,6 +108,8 @@ function App() {
             updateQuantity={updateQuantity}
             showCart={showCart}
             setShowCart={setShowCart}
+            notes={notes}
+            setNotes={setNotes}
           />
         </Route>
         <Route path="/success">

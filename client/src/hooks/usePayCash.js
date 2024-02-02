@@ -3,11 +3,12 @@ import { useState } from "react";
 function usePayCash() {
   const [isCashLoading, setIsCashLoading] = useState(false);
 
-  const payCash = async (products, history, paymentMethod) => {
+  const payCash = async (products, history, paymentMethod, notes) => {
     setIsCashLoading(true);
     try {
       const body = {
         products: products,
+        notes: notes,
       };
 
       const headers = { "Content-Type": "application/json" };

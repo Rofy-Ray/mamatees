@@ -115,6 +115,7 @@ function Dashboard() {
                           ))}
                       </tbody>
                     </Table>
+                    {order.notes && <Alert variant="info">{order.notes}</Alert>}
                     {order.payment === "cash" && (
                       <Alert
                         variant="danger"

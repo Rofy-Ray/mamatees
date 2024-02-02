@@ -12,7 +12,7 @@ import Cart from "../components/Cart";
 import useFetchFoodItems from "../hooks/useFetchFoodItems";
 import useWindowWidth from "../hooks/useWindowWidth";
 
-function Home({ cart, setCart, updateQuantity, showCart, setShowCart }) {
+function Home({ cart, setCart, updateQuantity, showCart, setShowCart, notes, setNotes }) {
   const items = useFetchFoodItems();
   const windowWidth = useWindowWidth();
   const [selectedType, setSelectedType] = useState("all");
@@ -34,7 +34,7 @@ function Home({ cart, setCart, updateQuantity, showCart, setShowCart }) {
         },
       ]);
     }
-    setShowCart(true);
+    setShowCart(true); 
   };
 
   const filterItems = (type, filter) => {
@@ -122,6 +122,8 @@ function Home({ cart, setCart, updateQuantity, showCart, setShowCart }) {
                   cart={cart}
                   updateQuantity={updateQuantity}
                   setShowCart={setShowCart}
+                  setNotes={setNotes}
+                  notes={notes}
                 />
               </div>
             </Modal.Body>
@@ -132,6 +134,8 @@ function Home({ cart, setCart, updateQuantity, showCart, setShowCart }) {
               cart={cart}
               updateQuantity={updateQuantity}
               setShowCart={setShowCart}
+              setNotes={setNotes}
+              notes={notes}
             />
           )
         )}
