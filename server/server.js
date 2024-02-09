@@ -39,8 +39,9 @@ io.on("connection", (socket) => {
 });
 
 const secretKey =
-  process.env.SESSION_SECRET ||
-  "1858f945b571cb256e4728a0779efc99bacd7b70da86f9c3b992a1661206057aa601b156690377c7d5f8d6300e9278d944120bc9f583f9899246636177e1f38e";
+  process.env.NODE_ENV === "production"
+    ? process.env.SESSION_SECRET
+    : process.env.DEV_SESSION_SECRET;
 const isSecure = process.env.NODE_ENV === "production";
 const sameSite = isSecure ? "none" : "lax";
 app.use(
@@ -85,7 +86,10 @@ const squareClient = new Client({
     process.env.NODE_ENV === "production"
       ? Environment.Production
       : Environment.Sandbox,
-  accessToken: process.env.SQUARE_ACCESS_TOKEN,
+  accessToken:
+    process.env.NODE_ENV === "production"
+      ? process.env.SQUARE_ACCESS_TOKEN
+      : process.env.SQUARE_SANDBOX_ACCESS_TOKEN,
 });
 
 app.get("/api/getFoodItems", async (req, res) => {
@@ -142,7 +146,7 @@ app.post(
         process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      console.log(`Error constructing event: ${err.message}`);
+      console.error(`Error constructing event: ${err.message}`);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -189,25 +193,88 @@ app.post("/api/processSquarePayment", async (req, res) => {
   }
 });
 
+let checkouts = [];
+
+app.post("/api/createCheckout", async (req, res) => {
+  const { total, notes, products } = req.body;
+  try {
+    const response = await squareClient.terminalApi.createTerminalCheckout({
+      idempotencyKey: uuidv4(),
+      checkout: {
+        amountMoney: {
+          amount: total * 100,
+          currency: "USD",
+        },
+        note: notes,
+        deviceOptions: {
+          deviceId:
+            process.env.NODE_ENV === "production"
+              ? process.env.SQUARE_DEVICE_ID
+              : process.env.SQUARE_SANDBOX_DEVICE_ID,
+        },
+      },
+    });
+
+    const replacer = (key, value) =>
+      typeof value === "bigint" ? value.toString() : value;
+
+    checkouts.push({ ...response.result.checkout, products: products });
+
+    res.json(JSON.parse(JSON.stringify(response, replacer)));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post(
   "/api/squarewebhook",
   express.raw({ type: "application/json" }),
   async (req, res) => {
-    const event = JSON.parse(req.body);
+    const event = req.body;
 
-    if (event.type === "payment.updated") {
-      const payment = event.data.object;
+    if (
+      event.type === "payment.updated" ||
+      event.type === "terminal.checkout.updated"
+    ) {
+      try {
+        const object = event.data.object;
 
-      if (payment.status === "COMPLETED") {
-        const newOrder = {
-          id: uuidv4(),
-          products: payment.lineItems,
-          timestamp: Date.now(),
-          notes: notes,
-        };
+        let status, id;
+        if (event.type === "payment.updated") {
+          status = object.payment.status;
+          id = object.payment.id;
+        } else if (event.type === "terminal.checkout.updated") {
+          status = object.checkout.status;
+          id = object.checkout.id;
+        }
 
-        orders.push(newOrder);
-        io.emit("newOrder", newOrder);
+        if (status === "COMPLETED") {
+          const checkout = checkouts.find((c) => c.id === id);
+
+          // if (!checkout) {
+          //   console.error(`No checkout found with id: ${id}`);
+          //   return;
+          // }
+
+          const orderId = uuidv4();
+          const newOrder = {
+            id: orderId,
+            products: checkout.products.map((product) => ({
+              ...product,
+              uid: uuidv4(),
+            })),
+            timestamp: Date.now(),
+            notes: checkout.note,
+          };
+
+          orders.push(newOrder);
+          io.emit("newOrder", newOrder);
+
+          io.emit("squarePaymentCompleted", { checkoutId: id });
+        }
+      } catch (error) {
+        console.error("Error processing event: ", error);
       }
     }
 
@@ -301,20 +368,27 @@ app.post("/api/logout", (req, res) => {
   });
 });
 
-
 app.get("/", (req, res) => {
   res.send("Server is running...");
 });
 
-// app.get("/*", function (req, res) {
-//   res.sendFile(
-//     path.join(__dirname, "../client/public/index.html"),
-//     function (err) {
-//       if (err) {
-//         res.status(500).send(err);
-//       }
-//     }
-//   );
-// });
+app.post("/api/createDeviceCode", async (req, res) => {
+  try {
+    const response = await squareClient.devicesApi.createDeviceCode({
+      idempotencyKey: uuidv4(),
+      deviceCode: {
+        name: "Mama T's Food Truck Terminal",
+        productType: "TERMINAL_API",
+        locationId:
+          process.env.NODE_ENV === "production"
+            ? process.env.REACT_APP_SQUARE_LOCATION_ID
+            : process.env.REACT_APP_SQUARE_SANDBOX_LOCATION_ID,
+      },
+    });
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 server.listen(port, () => console.log(`Server started on port ${port}...`));

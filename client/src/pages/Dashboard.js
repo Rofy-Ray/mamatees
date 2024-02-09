@@ -36,7 +36,7 @@ function Dashboard() {
     setIsLoggedOn(localStorage.getItem("isLoggedOn") === "true");
   }, []);
 
-  useSocket(setOrders);
+  useSocket(setOrders, () => {});
 
   if (!isLoggedOn) {
     return <Redirect to="/logon" />;
@@ -105,7 +105,7 @@ function Dashboard() {
                           order.products.map((product) => (
                             <tr key={product.uid}>
                               <td>
-                                {order.payment === "cash"
+                                {order.payment === "cash" || product.name
                                   ? product.name
                                   : product.description}
                               </td>

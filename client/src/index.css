@@ -246,8 +246,17 @@ body,
   text-align: center;
   padding: 20px 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   font-family: 'Englebert', cursive;
   font-size: large;
+}
+
+.footer p {
+  margin-bottom: 0;
+}
+.footer-link {
+  color: #10caf0;
+  text-decoration: none;
 }

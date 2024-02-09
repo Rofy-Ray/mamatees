@@ -1,10 +1,16 @@
 import { useEffect } from "react";
 import io from "socket.io-client";
 
-function useSocket(setOrders) {
+function useSocket(setOrders, handleSquarePaymentCompleted) {
   useEffect(() => {
     const socket = io(`${process.env.REACT_APP_SERVER_URL}`);
+
     socket.on("connect", () => {
+
+      socket.on("squarePaymentCompleted", (data) => {
+        handleSquarePaymentCompleted(data);
+      });
+
       socket.on("newOrder", (order) => {
         if (order && order.products) {
           setOrders((prevOrders) => {
@@ -19,15 +25,17 @@ function useSocket(setOrders) {
       });
 
       socket.on("connect_error", (err) => {
-        console.log(`connect_error due to ${err.message}`);
+        console.error(`connect_error due to ${err.message}`);
       });
     });
+
     return () => {
       socket.off("newOrder");
+      socket.off("squarePaymentCompleted");
       socket.off("connect_error");
       socket.close();
     };
-  }, [setOrders]);
+  }, [setOrders, handleSquarePaymentCompleted]);
 }
 
 export default useSocket;

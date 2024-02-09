@@ -40,7 +40,7 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
     setIsSquareLoading(true);
     history.push({
       pathname: "/squarepayment",
-      state: { total: total, notes: notes },
+      state: { total: total, notes: notes, cart: cart },
     });
   };
 
