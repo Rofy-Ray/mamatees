@@ -10,7 +10,7 @@ function useProcessSquarePayment() {
   const replacer = (key, value) =>
     typeof value === "bigint" ? value.toString() : value;
 
-  const processSquarePayment = async (total, cardNonce, notes) => {
+  const processSquarePayment = async (total, cardNonce, notes, cart ) => {
     setIsLoading(true);
     setError(null);
 
@@ -22,7 +22,8 @@ function useProcessSquarePayment() {
           amount: total * 100,
           currency: "USD",
         },
-        notes: notes,
+        note: notes,
+        products: cart,
       };
 
       const headers = { "Content-Type": "application/json" };

@@ -76,7 +76,7 @@ function Dashboard() {
         </div>
       )}
       <Container fluid>
-        <Row className="g-4 justify-content-center">
+        <Row className="g-4 justify-content-center pb-5">
           {orders &&
             orders.map((order, index) => (
               <Col key={order.id}>

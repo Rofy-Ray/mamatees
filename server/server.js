@@ -25,6 +25,7 @@ setInterval(
   () => {
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
     orders = orders.filter((order) => order.timestamp > oneHourAgo);
+    checkouts = checkouts.filter((checkout) => checkout.timestamp > oneHourAgo);
   },
   60 * 60 * 1000
 );
@@ -172,28 +173,29 @@ app.post(
   }
 );
 
+let checkouts = [];
+
 app.post("/api/processSquarePayment", async (req, res) => {
-  const { idempotencyKey, nonce, amountMoney, notes } = req.body;
+  const { idempotencyKey, nonce, amountMoney, note, products } = req.body;
 
   try {
-    const {
-      result: { payment },
-    } = await squareClient.paymentsApi.createPayment({
+    const response = await squareClient.paymentsApi.createPayment({
       idempotencyKey,
       sourceId: nonce,
       amountMoney,
+      note
     });
 
     const replacer = (key, value) =>
       typeof value === "bigint" ? value.toString() : value;
 
-    res.json(JSON.parse(JSON.stringify(payment, replacer)));
+    checkouts.push({ ...response.result.payment, products: products, timestamp: Date.now() });
+
+    res.json(JSON.parse(JSON.stringify(response, replacer)));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
-let checkouts = [];
 
 app.post("/api/createCheckout", async (req, res) => {
   const { total, notes, products } = req.body;
@@ -218,7 +220,7 @@ app.post("/api/createCheckout", async (req, res) => {
     const replacer = (key, value) =>
       typeof value === "bigint" ? value.toString() : value;
 
-    checkouts.push({ ...response.result.checkout, products: products });
+    checkouts.push({ ...response.result.checkout, products: products, timestamp: Date.now() });
 
     res.json(JSON.parse(JSON.stringify(response, replacer)));
   } catch (error) {
@@ -240,22 +242,23 @@ app.post(
       try {
         const object = event.data.object;
 
-        let status, id;
+        let status, id, processingFee;
         if (event.type === "payment.updated") {
           status = object.payment.status;
           id = object.payment.id;
+          processingFee = object.payment.processing_fee;
         } else if (event.type === "terminal.checkout.updated") {
           status = object.checkout.status;
           id = object.checkout.id;
         }
 
-        if (status === "COMPLETED") {
+        if ((processingFee || event.type === "terminal.checkout.updated") && status === "COMPLETED") {
           const checkout = checkouts.find((c) => c.id === id);
 
-          // if (!checkout) {
-          //   console.error(`No checkout found with id: ${id}`);
-          //   return;
-          // }
+          if (!checkout) {
+            console.error(`No checkout found with id: ${id}`);
+            return;
+          }
 
           const orderId = uuidv4();
           const newOrder = {

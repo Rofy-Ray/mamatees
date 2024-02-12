@@ -8,7 +8,7 @@ async function getDeviceCode() {
       headers: { 'Content-Type': 'application/json' },
     });
     const res = await response.json();
-    console.log(res);
+    console.log(res); 
   } catch (error) {
     console.error(error.message);
   }

@@ -74,13 +74,13 @@ function SquarePaymentForm() {
   const handleCardNonce = useCallback(async () => {
     const result = await card.tokenize();
     if (result.status === "OK") {
-      processSquarePayment(total, result.token);
+      processSquarePayment(total, result.token, notes, cart);
     } else {
       setError(
         "Failed to tokenize card. Please check your card details and try again."
       );
     }
-  }, [card, processSquarePayment, total, setError]);
+  }, [card, processSquarePayment, total, notes, cart, setError]);
 
   const initializeCard = async () => {
     if (window.Square) {
