@@ -394,7 +394,7 @@ app.post("/api/createDeviceCode", async (req, res) => {
   }
 });
 
-app.post("/api/getDeviceCode", async (req, res) => {
+app.get("/api/getDeviceCode", async (req, res) => {
   try {
     const deviceId = req.body.deviceId;
     const response = await squareClient.devicesApi.getDeviceCode({
