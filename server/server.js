@@ -396,10 +396,8 @@ app.post("/api/createDeviceCode", async (req, res) => {
 
 app.get("/api/getDeviceCode", async (req, res) => {
   try {
-    const deviceId = req.body.deviceId;
-    const response = await squareClient.devicesApi.getDeviceCode({
-      deviceId
-    });
+    const deviceId = req.query.deviceId;
+    const response = await squareClient.devicesApi.getDeviceCode(deviceId);
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
