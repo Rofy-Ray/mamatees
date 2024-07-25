@@ -98,9 +98,37 @@ app.get("/api/getFoodItems", async (req, res) => {
   res.json(foodItems);
 });
 
+app.get("/api/getCheckedFoodItems", async (req, res) => {
+  try {
+    const checkedItems = await FoodItem.find({ checked: true });
+    res.json(checkedItems);
+  } catch (error) {
+    console.error("Error fetching checked food items:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post("/api/addFoodItems", async (req, res) => {
   const savedFoodItem = await dbUtils.upsertFoodItem(req.body);
   res.json(savedFoodItem);
+});
+
+app.post("/api/updateMenuItems", async (req, res) => {
+  const { items } = req.body;
+  try {
+      const bulkOps = items.map(item => ({
+          updateOne: {
+              filter: { _id: item._id },
+              update: { $set: { checked: item.checked } }
+          }
+      }));
+
+      await FoodItem.bulkWrite(bulkOps);
+      res.sendStatus(200);
+  } catch (error) {
+      console.error("Error updating menu items:", error);
+      res.status(500).json({ error: error.message });
+  }
 });
 
 app.post("/api/processStripePayment", async (req, res) => {

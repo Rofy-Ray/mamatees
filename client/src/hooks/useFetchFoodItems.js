@@ -5,11 +5,19 @@ function useFetchFoodItems() {
 
   useEffect(() => {
     const fetchFoodItems = async () => {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER_URL}/api/getFoodItems`
-      );
-      const data = await response.json();
-      setItems(data);
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/api/getCheckedFoodItems`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setItems(data);
+        } else {
+          console.error("Failed to fetch food items");
+        }
+      } catch (error) {
+        console.error("Error fetching food items:", error);
+      }
     };
 
     fetchFoodItems();

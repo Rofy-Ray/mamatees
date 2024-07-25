@@ -8,6 +8,7 @@ const FoodItemSchema = new mongoose.Schema({
   meal_price: Number,
   image: String,
   type: String,
+  checked: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("FoodItem", FoodItemSchema, "menu");

@@ -6,26 +6,39 @@ function NavBar({ setShowCart, isLoggedOn, handleLogout }) {
   const currentRoute = location.pathname;
 
   return (
-    <Navbar bg="dark" data-bs-theme="dark" variant="dark" sticky="top">
+    <Navbar bg="dark" data-bs-theme="dark" variant="dark" sticky="top" expand="lg">
       <Container fluid>
         <Navbar.Brand as={Link} to="/" className="me-auto">
           Mama T's Rollin' Snack Shack
         </Navbar.Brand>
-        <Nav className="ms-auto">
-          {currentRoute !== "/logon" &&
-            currentRoute !== "/orders" &&
-            currentRoute !== "/squarepayment" && (
-              <>
-                <Nav.Link as={Link} to="/">
-                  Food
-                </Nav.Link>
-                <Nav.Link onClick={() => setShowCart(true)}>My Plate</Nav.Link>
-              </>
-            )}
-          {isLoggedOn && location.pathname === "/orders" && (
-            <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
-          )}
-        </Nav>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              {currentRoute === "/" && (
+                <>
+                  <Nav.Link as={Link} to="/">
+                    Food
+                  </Nav.Link>
+                  <Nav.Link onClick={() => setShowCart(true)}>My Plate</Nav.Link>
+                </>
+              )}
+              {isLoggedOn && (
+                <>
+                  {(currentRoute === "/orders" || currentRoute === "/fix") && (
+                    <>
+                      <Nav.Link as={Link} to="/orders">
+                        Orders
+                      </Nav.Link>
+                      <Nav.Link as={Link} to="/fix">
+                        Fix Menu
+                      </Nav.Link>
+                      <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                    </>
+                  )}
+                </>
+              )}
+            </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );

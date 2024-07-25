@@ -15,6 +15,7 @@ import CancelCard from "./pages/CancelCard";
 import Dashboard from "./pages/Dashboard";
 import Logon from "./pages/Logon";
 import SquarePaymentForm from "./pages/SquarePaymentForm";
+import FixMenu from "./pages/FixMenu";
 
 function App() {
   const [cart, setCart] = useState(
@@ -31,6 +32,7 @@ function App() {
   const history = useHistory();
   const location = useLocation();
   const prevLocation = useRef();
+  const targetRoute = location.state?.from || "/";
 
   useEffect(() => {
     setCurrentRoute(isLoggedOn ? "/orders" : "/logon");
@@ -119,15 +121,13 @@ function App() {
           <CancelCard setShowCart={setShowCart} />
         </Route>
         <Route path="/orders">
-          {isLoggedOn ? <Dashboard /> : <Redirect to="/logon" />}
+          {isLoggedOn ? <Dashboard /> : <Redirect to={{ pathname: "/logon", state: { from: "/orders" } }} />}
         </Route>
-        ) : (
+        <Route path="/fix">
+          {isLoggedOn ? <FixMenu /> : <Redirect to={{ pathname: "/logon", state: { from: "/fix" } }} />}
+        </Route>
         <Route path="/logon">
-          {isLoggedOn ? (
-            <Redirect to="/orders" />
-          ) : (
-            <Logon setIsLoggedOn={setIsLoggedOn} />
-          )}
+          {isLoggedOn ? <Redirect to={targetRoute} /> : <Logon setIsLoggedOn={setIsLoggedOn} />}
         </Route>
         <Route path="/squarepayment">
           <SquarePaymentForm />

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Card, Form, Button, Alert } from "react-bootstrap";
+import { useLocation, useHistory } from "react-router-dom";
 
 const Logon = ({ setIsLoggedOn }) => {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+  const history = useHistory();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -24,6 +27,8 @@ const Logon = ({ setIsLoggedOn }) => {
         if (statusResponse.data.isLoggedOn) {
           setIsLoggedOn(true);
           localStorage.setItem("isLoggedOn", "true");
+          const redirectPath = location.state?.from || "/"; 
+          history.push(redirectPath);
         }
       }
     } catch (error) {
