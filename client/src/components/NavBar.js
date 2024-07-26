@@ -24,13 +24,16 @@ function NavBar({ setShowCart, isLoggedOn, handleLogout }) {
               )}
               {isLoggedOn && (
                 <>
-                  {(currentRoute === "/orders" || currentRoute === "/fix") && (
+                  {(currentRoute === "/orders" || currentRoute === "/fix" || currentRoute === "/add") && (
                     <>
                       <Nav.Link as={Link} to="/orders">
                         Orders
                       </Nav.Link>
                       <Nav.Link as={Link} to="/fix">
                         Fix Menu
+                      </Nav.Link>
+                      <Nav.Link as={Link} to="/add">
+                        Add Menu
                       </Nav.Link>
                       <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                     </>

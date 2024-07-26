@@ -13,6 +13,9 @@ const app = express();
 const http = require("http");
 const socketIo = require("socket.io");
 const server = http.createServer(app);
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const io = socketIo(server, {
   cors: {
     origin: process.env.CLIENT_URL,
@@ -111,6 +114,27 @@ app.get("/api/getCheckedFoodItems", async (req, res) => {
 app.post("/api/addFoodItems", async (req, res) => {
   const savedFoodItem = await dbUtils.upsertFoodItem(req.body);
   res.json(savedFoodItem);
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "mamatees",
+    format: async (req, file) => "png", 
+    public_id: (req, file) => file.originalname,
+  },
+});
+
+const parser = multer({ storage: storage });
+
+app.post("/api/uploadImage", parser.single("file"), (req, res) => {
+  res.json({ secure_url: req.file.path });
 });
 
 app.post("/api/updateMenuItems", async (req, res) => {

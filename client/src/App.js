@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import Logon from "./pages/Logon";
 import SquarePaymentForm from "./pages/SquarePaymentForm";
 import FixMenu from "./pages/FixMenu";
+import AddMenu from "./pages/AddMenu";
 
 function App() {
   const [cart, setCart] = useState(
@@ -125,6 +126,9 @@ function App() {
         </Route>
         <Route path="/fix">
           {isLoggedOn ? <FixMenu /> : <Redirect to={{ pathname: "/logon", state: { from: "/fix" } }} />}
+        </Route>
+        <Route path="/add">
+          {isLoggedOn ? <AddMenu /> : <Redirect to={{ pathname: "/logon", state: { from: "/add" } }} />}
         </Route>
         <Route path="/logon">
           {isLoggedOn ? <Redirect to={targetRoute} /> : <Logon setIsLoggedOn={setIsLoggedOn} />}

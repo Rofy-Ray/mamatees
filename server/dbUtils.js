@@ -28,6 +28,7 @@ async function upsertFoodItem(item) {
       existingItem.meal_price = item.meal_price;
       existingItem.image = item.image;
       existingItem.type = item.type;
+      existingItem.checked = item.checked;
       return await existingItem.save();
     } else {
       const newItem = new FoodItem({
@@ -38,6 +39,7 @@ async function upsertFoodItem(item) {
         meal_price: item.meal_price,
         image: item.image,
         type: item.type,
+        checked: item.checked,
       });
       return await newItem.save();
     }

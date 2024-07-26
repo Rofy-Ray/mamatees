@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
 import {
     Container,
     Form,
@@ -14,7 +13,6 @@ const FixMenu = () => {
     const [loading, setLoading] = useState(true);
     const [alertMessage, setAlertMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
-    const history = useHistory();
 
     useEffect(() => {
         const fetchFoodItems = async () => {
@@ -47,7 +45,6 @@ const FixMenu = () => {
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
-                history.push('/orders');
             }, 3000);
         } catch (error) {
             console.error("Error updating menu items", error);
