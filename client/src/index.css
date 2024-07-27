@@ -183,6 +183,17 @@ body,
   font-size: x-large !important;
 }
 
+.image-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd; /* Optional */
+  /* display: block; */
+  /* margin: 0 auto; */
+}
+
+
 #form-wrapper {
   display: flex;
   justify-content: center;

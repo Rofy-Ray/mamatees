@@ -111,7 +111,7 @@ app.get("/api/getCheckedFoodItems", async (req, res) => {
   }
 });
 
-app.post("/api/addFoodItems", async (req, res) => {
+app.post("/api/upsertFoodItems", async (req, res) => {
   const savedFoodItem = await dbUtils.upsertFoodItem(req.body);
   res.json(savedFoodItem);
 });
@@ -152,6 +152,43 @@ app.post("/api/updateMenuItems", async (req, res) => {
   } catch (error) {
       console.error("Error updating menu items:", error);
       res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/api/deleteFoodItem/:id", async (req, res) => {
+  try {
+    const foodItem = await FoodItem.findById(req.params.id);
+    if (!foodItem) {
+      return res.status(404).json({ error: 'Food item not found' });
+    }
+    const imageUrl = foodItem.image;
+    const publicId = imageUrl
+      .split('/').slice(-2) 
+      .join('/')               
+      .split('.').slice(0, -1)
+      .join('.'); 
+    await dbUtils.deleteFoodItem(req.params.id);
+    result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'image'
+    });
+    if (result.result === 'ok') {
+      res.sendStatus(200);
+    } else {
+      throw new Error('Failed to delete image from Cloudinary');
+    }
+  } catch (error) {
+    console.error("Error deleting food item:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/getFoodItem/:id", async (req, res) => {
+  try {
+    const foodItem = await dbUtils.getFoodItemById(req.params.id);
+    res.json(foodItem);
+  } catch (error) {
+    console.error("Error fetching food item:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 

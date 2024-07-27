@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Form, Button, Alert, Row, Col } from "react-bootstrap";
+import { useParams, useLocation } from "react-router-dom";
 
 const AddMenu = () => {
+  const { id } = useParams();
+  const location = useLocation();
   const [formData, setFormData] = useState({
+    _id: "",
     name: "",
     description: "",
     unit_price: "",
@@ -15,6 +19,40 @@ const AddMenu = () => {
   const [imageFile, setImageFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (location.state && location.state.item) {
+      const data = location.state.item;
+      // const imagePublicId = data.image.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
+      setFormData({
+        _id: data._id || "",
+        name: data.name || "",
+        description: data.description || "",
+        unit_price: data.unit_price || "",
+        meal_price: data.meal_price || "",
+        image: data.image || "",
+        type: data.type || "",
+        checked: data.checked || false,
+      });
+    } else if (id) {
+      fetch(`${process.env.REACT_APP_SERVER_URL}/api/getFoodItem/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          // const imagePublicId = data.image.split('/').slice(-1)[0].split('.').slice(0, -1).join('.');
+          setFormData({
+            _id: data._id || "",
+            name: data.name || "",
+            description: data.description || "",
+            unit_price: data.unit_price || "",
+            meal_price: data.meal_price || "",
+            image: data.image || "",
+            type: data.type || "",
+            checked: data.checked || false,
+          });
+        })
+        .catch(error => console.error("Error fetching food item:", error));
+    }
+  }, [id, location.state]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -44,9 +82,11 @@ const AddMenu = () => {
         });
         const data = await response.json();
         imageUrl = data.secure_url;
+      } else {
+        imageUrl = formData.image;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/addFoodItems`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/upsertFoodItems`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,8 +95,9 @@ const AddMenu = () => {
       });
 
       if (response.ok) {
-        setMessage("Food menu item added successfully!");
+        setMessage(isEditing ? "Food menu item updated successfully!" : "Food menu item added successfully!");
         setFormData({
+            _id: "",
             name: "",
             description: "",
             unit_price: "",
@@ -69,11 +110,11 @@ const AddMenu = () => {
             fileInputRef.current.value = "";
         }
       } else {
-        setMessage("Failed to add food menu item.");
+        setMessage(isEditing ? "Failed to update food menu item." : "Failed to add food menu item.");
       }
     } catch (error) {
       console.error("Error: " + error.message);
-      setMessage("Error adding food item to menu");
+      setMessage(isEditing ? "Error updating food item to menu." : "Error adding food item to menu.");
     } finally {
         setIsSubmitting(false);
     }
@@ -90,9 +131,11 @@ const AddMenu = () => {
     }
   }, [message]);
 
+  const isEditing = id || (location.state && location.state.item);
+
   return (
     <div className="container mt-5" style={{ maxWidth: '75%' }}>
-      <h1>Add New Food Menu Item</h1>
+      <h1>{isEditing ? "Edit Food Menu Item" : "Add New Food Menu Item"}</h1>
       <Form onSubmit={handleSubmit}>
         <Row>
             <Col md={6}>
@@ -166,9 +209,18 @@ const AddMenu = () => {
                 type="file"
                 name="image"
                 onChange={handleFileChange}
-                required
+                required={!isEditing}
                 ref={fileInputRef}
               />
+              {formData.image && (
+                <div className="mt-2" style={{ display: 'flex', justifyContent: 'center' }}>
+                  <img
+                    src={formData.image}
+                    alt="Current"
+                    className="image-circle"
+                  />
+                </div>
+              )}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -192,7 +244,7 @@ const AddMenu = () => {
         </Row>
         {message && <Alert className="mt-3" variant={alertVariant}>{message}</Alert>}
         <Button variant="primary" type="submit" className="my-5" disabled={isSubmitting}>
-            {isSubmitting ? "Uploading..." : "Add Food Item"}
+          {isSubmitting ? "Uploading..." : isEditing ? "Update Food Item" : "Add Food Item"}
         </Button>
       </Form>
     </div>

@@ -6,13 +6,19 @@ import {
     ListGroup,
     Button,
     Alert,
+    Modal,
 } from "react-bootstrap";
+import { Pencil, Trash } from 'react-bootstrap-icons';
+import { useHistory } from 'react-router-dom';
 
 const FixMenu = () => {
     const [foodItems, setFoodItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [alertMessage, setAlertMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [deleteItemId, setDeleteItemId] = useState(null);
+    const history = useHistory();
 
     useEffect(() => {
         const fetchFoodItems = async () => {
@@ -56,14 +62,48 @@ const FixMenu = () => {
         }
     };
 
+    const handleEdit = (id) => {
+        const itemToEdit = foodItems.find(item => item._id === id);
+        history.push('/edit', { item: itemToEdit });
+    };      
+      
+
+    const handleDelete = (id) => {
+        setDeleteItemId(id);
+        setShowModal(true);
+    };
+
+    // Function to confirm delete
+    const confirmDelete = async () => {
+        try {
+            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/deleteFoodItem/${deleteItemId}`);
+            setFoodItems(foodItems.filter(item => item._id !== deleteItemId));
+            setAlertMessage("Food item deleted successfully!");
+            setShowAlert(true);
+            setTimeout(() => {
+                setShowAlert(false);
+            }, 3000);
+        } catch (error) {
+            console.error("Error deleting food item", error);
+            setAlertMessage("Error deleting food item.");
+            setShowAlert(true);
+            setTimeout(() => {
+                setShowAlert(false);
+            }, 3000);
+        } finally {
+            setShowModal(false);
+        }
+    };
+
     if (loading) return <p>Loading...</p>;
 
     return (
         <Container className="mt-4">
             <h2>Fix Menu</h2>
-            <ListGroup className="mt-3" variant="flush" striped hover>
+            <ListGroup className="mt-3" variant="flush">
                 {foodItems.map((item) => (
-                    <ListGroup.Item key={item._id} className="d-flex align-items-center">
+                    <ListGroup.Item action key={item._id} className="d-flex align-items-center justify-content-between">
+                        <div className="d-flex align-items-center">
                         <Form.Check
                             type="checkbox"
                             checked={item.checked || false}
@@ -71,6 +111,11 @@ const FixMenu = () => {
                             className="me-2"
                         />
                         {item.name}
+                        </div>
+                        <div>
+                            <Pencil className="me-3" style={{ cursor: 'pointer' }} onClick={() => handleEdit(item._id)} />
+                            <Trash style={{ cursor: 'pointer', color: '#ff0000' }} onClick={() => handleDelete(item._id)} />
+                        </div>
                     </ListGroup.Item>
                 ))}
             </ListGroup>
@@ -85,6 +130,20 @@ const FixMenu = () => {
                     {alertMessage}
                 </Alert>
             )}
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this food item?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmDelete}>
+                        Yes, delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };

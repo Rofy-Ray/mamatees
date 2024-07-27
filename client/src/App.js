@@ -130,6 +130,9 @@ function App() {
         <Route path="/add">
           {isLoggedOn ? <AddMenu /> : <Redirect to={{ pathname: "/logon", state: { from: "/add" } }} />}
         </Route>
+        <Route path="/edit">
+          {isLoggedOn ? <AddMenu /> : <Redirect to={{ pathname: "/logon", state: { from: "/edit" } }} />}
+        </Route>
         <Route path="/logon">
           {isLoggedOn ? <Redirect to={targetRoute} /> : <Logon setIsLoggedOn={setIsLoggedOn} />}
         </Route>

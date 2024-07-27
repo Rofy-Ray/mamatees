@@ -24,7 +24,7 @@ function NavBar({ setShowCart, isLoggedOn, handleLogout }) {
               )}
               {isLoggedOn && (
                 <>
-                  {(currentRoute === "/orders" || currentRoute === "/fix" || currentRoute === "/add") && (
+                  {(currentRoute === "/orders" || currentRoute === "/fix" || currentRoute === "/add" || currentRoute === "/edit") && (
                     <>
                       <Nav.Link as={Link} to="/orders">
                         Orders

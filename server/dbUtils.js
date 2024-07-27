@@ -2,7 +2,6 @@ const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../client/.env") });
 const mongoose = require("mongoose");
 const FoodItem = require("./models/FoodItem");
-const crypto = require("crypto");
 
 async function connectDB() {
   try {
@@ -14,13 +13,32 @@ async function connectDB() {
   }
 }
 
+async function deleteFoodItem(id) {
+  try {
+    await FoodItem.deleteOne({ _id: id });
+  } catch (err) {
+    console.error(err.message);
+    throw err;
+  }
+}
+
+async function getFoodItemById(id) {
+  try {
+    return await FoodItem.findById(id);
+  } catch (err) {
+    console.error(err.message);
+    throw err;
+  }
+}
+
 async function upsertFoodItem(item) {
   try {
-    const hash = crypto.createHash("sha256");
-    hash.update(item.description + item.price + item.image + item.type);
-    const id = hash.digest("hex");
+    let existingItem;
 
-    const existingItem = await FoodItem.findOne({ _id: id });
+    if (item._id) {
+      existingItem = await FoodItem.findById(item._id);
+    }
+
     if (existingItem) {
       existingItem.name = item.name;
       existingItem.description = item.description;
@@ -32,7 +50,6 @@ async function upsertFoodItem(item) {
       return await existingItem.save();
     } else {
       const newItem = new FoodItem({
-        _id: id,
         name: item.name,
         description: item.description,
         unit_price: item.unit_price,
@@ -49,4 +66,4 @@ async function upsertFoodItem(item) {
   }
 }
 
-module.exports = { connectDB, upsertFoodItem, mongoose };
+module.exports = { connectDB, upsertFoodItem, deleteFoodItem, getFoodItemById, mongoose };

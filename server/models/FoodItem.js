@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const FoodItemSchema = new mongoose.Schema({
-  _id: String,
   name: String,
   description: String,
   unit_price: Number,

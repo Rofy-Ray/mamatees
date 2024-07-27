@@ -22,10 +22,14 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
   const [buttonText, setButtonText] = useState("");
   const history = useHistory();
 
-  const total = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
+  const subTotal = cart.reduce(
+    (subTotal, item) => subTotal + item.price * item.quantity,
     0
   );
+
+  const salesTax = subTotal * 0.0675;
+
+  const total = subTotal + salesTax;
 
   useEffect(() => {
     if (total === 0) {
@@ -106,6 +110,26 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
             </ListGroup.Item>
           ))}
         </ListGroup>
+        <p
+          style={{
+            fontSize: "large",
+            fontWeight: "bolder",
+            color: "#10caf0",
+            paddingTop: "15px",
+          }}
+        >
+          Subtotal: ${subTotal.toFixed(2)}
+        </p>
+        <p
+          style={{
+            fontSize: "medium",
+            fontWeight: "bolder",
+            color: "lightcyan",
+            paddingTop: "15px",
+          }}
+        >
+          Sales Tax: ${salesTax.toFixed(2)}
+        </p>
         <p
           style={{
             fontSize: "x-large",
