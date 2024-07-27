@@ -265,7 +265,16 @@ app.post("/api/createCheckout", async (req, res) => {
             process.env.NODE_ENV === "production"
               ? process.env.SQUARE_DEVICE_ID
               : process.env.SQUARE_SANDBOX_DEVICE_ID,
+          skipReceiptScreen: false,
+          tipSettings: {
+            allowTipping: true,
+            separateTipScreen: true,
+            customTipField: true,
+          },
         },
+        pricingOptions: {
+          autoApplyTaxes: true,
+        }
       },
     });
 
