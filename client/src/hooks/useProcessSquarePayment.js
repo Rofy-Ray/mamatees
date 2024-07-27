@@ -15,11 +15,12 @@ function useProcessSquarePayment() {
     setError(null);
 
     try {
+      const roundedTotal = Math.round(total * 100);
       const body = {
         idempotencyKey: uuidv4(),
         nonce: cardNonce,
         amountMoney: {
-          amount: total * 100,
+          amount: roundedTotal,
           currency: "USD",
         },
         note: notes,

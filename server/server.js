@@ -289,11 +289,12 @@ app.post("/api/processSquarePayment", async (req, res) => {
 app.post("/api/createCheckout", async (req, res) => {
   const { total, notes, products } = req.body;
   try {
+    const roundedTotal = Math.round(total * 100);
     const response = await squareClient.terminalApi.createTerminalCheckout({
       idempotencyKey: uuidv4(),
       checkout: {
         amountMoney: {
-          amount: total * 100,
+          amount: roundedTotal,
           currency: "USD",
         },
         note: notes,

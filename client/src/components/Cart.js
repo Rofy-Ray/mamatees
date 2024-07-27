@@ -29,7 +29,7 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
 
   const salesTax = subTotal * 0.0675;
 
-  const total = subTotal + salesTax;
+  const total = Math.round((subTotal + salesTax) * 100) / 100;
 
   useEffect(() => {
     if (total === 0) {
