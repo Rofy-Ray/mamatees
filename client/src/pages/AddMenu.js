@@ -237,6 +237,7 @@ const AddMenu = () => {
                 <option value="entree">Entree</option>
                 <option value="appetizer">Appetizer</option>
                 <option value="dessert">Dessert</option>
+                <option value="beverage">Beverage</option>
               </Form.Control>
             </Form.Group>
           </Col>
