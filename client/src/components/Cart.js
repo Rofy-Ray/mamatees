@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   ListGroup,
   Button,
+  ButtonGroup,
   CloseButton,
   Image,
   Row,
@@ -14,13 +15,23 @@ import usePayCash from "../hooks/usePayCash";
 import useWindowWidth from "../hooks/useWindowWidth";
 import { useHistory } from "react-router-dom";
 
-function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
+function Cart({ cart, updateQuantity, setShowCart, setNotes, notes, removeItem }) {
   const windowWidth = useWindowWidth();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isSquareLoading, setIsSquareLoading] = useState(false);
   const [payCash, isCashLoading] = usePayCash();
   const [buttonText, setButtonText] = useState("");
   const history = useHistory();
+
+  const handleQuantityChange = (item, newQuantity) => {
+    if (newQuantity >= 1) {
+      updateQuantity(item._id, newQuantity, item.isMeal);
+    }
+  };
+
+  const handleRemoveItem = (item) => {
+    removeItem(item._id, item.isMeal);
+  };
 
   const subTotal = cart.reduce(
     (subTotal, item) => subTotal + item.price * item.quantity,
@@ -67,7 +78,7 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
         <h2>Your Plate</h2>
         <ListGroup variant="flush">
           {cart.map((item) => (
-            <ListGroup.Item variant="light" key={item._id}>
+            <ListGroup.Item variant="light" key={item._id + item.isMeal}>
               <Row className="align-items-center">
                 <Col xs={3} md={2}>
                   <Image
@@ -79,7 +90,7 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
                 </Col>
                 <Col xs={9} md={10} className="d-flex align-items-center">
                   <h5 className="mx-auto" style={{ fontSize: fontSize }}>
-                    {item.name}
+                  {item.name} {item.isMeal ? '(Meal)' : '(Sandwich)'}
                   </h5>
                 </Col>
               </Row>
@@ -90,18 +101,31 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes }) {
                   </p>
                 </Col>
                 <Col xs={4} className="d-flex justify-content-center">
+                <ButtonGroup>
+                    <Button
+                      onClick={() => handleQuantityChange(item, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                    >
+                      -
+                    </Button>
                   <Form.Control
                     type="number"
                     min="1"
                     value={item.quantity}
-                    onChange={(e) => updateQuantity(item._id, e.target.value)}
+                    onChange={(e) => handleQuantityChange(item, parseInt(e.target.value, 10))}
                     style={{ width: "60px" }}
                   />
+                  <Button
+                      onClick={() => handleQuantityChange(item, item.quantity + 1)}
+                    >
+                      +
+                    </Button>
+                  </ButtonGroup>
                 </Col>
                 <Col xs={4} className="d-flex justify-content-end">
                   <Button
                     variant="danger"
-                    onClick={() => updateQuantity(item._id, 0)}
+                    onClick={() => handleRemoveItem(item)}
                   >
                     <Trash />
                   </Button>

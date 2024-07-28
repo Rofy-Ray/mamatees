@@ -95,6 +95,10 @@ function App() {
     });
   };
 
+  const removeItem = (id, isMeal) => {
+    setCart((prevCart) => prevCart.filter((item) => !(item._id === id && item.isMeal === isMeal)));
+  };
+
   return (
     <div className="App">
       <NavBar
@@ -111,6 +115,7 @@ function App() {
             updateQuantity={updateQuantity}
             showCart={showCart}
             setShowCart={setShowCart}
+            removeItem={removeItem}
             notes={notes}
             setNotes={setNotes}
           />

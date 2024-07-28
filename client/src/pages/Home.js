@@ -12,7 +12,7 @@ import Cart from "../components/Cart";
 import useFetchFoodItems from "../hooks/useFetchFoodItems";
 import useWindowWidth from "../hooks/useWindowWidth";
 
-function Home({ cart, setCart, updateQuantity, showCart, setShowCart, notes, setNotes }) {
+function Home({ cart, setCart, showCart, setShowCart, notes, setNotes, removeItem }) {
   const items = useFetchFoodItems();
   const windowWidth = useWindowWidth();
   const [selectedType, setSelectedType] = useState("all");
@@ -20,9 +20,9 @@ function Home({ cart, setCart, updateQuantity, showCart, setShowCart, notes, set
   const [searchTerm, setSearchTerm] = useState("");
 
   const addToCart = (item) => {
-    const existingItem = cart.find((i) => i._id === item._id);
+    const existingItem = cart.find((i) => i._id === item._id && i.isMeal === item.isMeal);
     if (existingItem) {
-      updateQuantity(item._id, existingItem.quantity + 1);
+      updateCartQuantity(existingItem._id, existingItem.quantity + 1, item.isMeal);
     } else {
       setCart([
         ...cart,
@@ -34,7 +34,14 @@ function Home({ cart, setCart, updateQuantity, showCart, setShowCart, notes, set
         },
       ]);
     }
-    setShowCart(true); 
+    setShowCart(true);
+  };
+
+  const updateCartQuantity = (itemId, newQuantity, isMeal) => {
+    setCart(cart.map(item => 
+      item._id === itemId && item.isMeal === isMeal ? 
+        { ...item, quantity: newQuantity } : item
+    ));
   };
 
   const filterItems = (type, filter) => {
@@ -120,7 +127,7 @@ function Home({ cart, setCart, updateQuantity, showCart, setShowCart, notes, set
               <div className={`cart ${windowWidth <= 768 ? "cart-modal" : ""}`}>
                 <Cart
                   cart={cart}
-                  updateQuantity={updateQuantity}
+                  updateQuantity={updateCartQuantity}
                   setShowCart={setShowCart}
                   setNotes={setNotes}
                   notes={notes}
@@ -132,7 +139,8 @@ function Home({ cart, setCart, updateQuantity, showCart, setShowCart, notes, set
           showCart && (
             <Cart
               cart={cart}
-              updateQuantity={updateQuantity}
+              updateQuantity={updateCartQuantity}
+              removeItem={removeItem}
               setShowCart={setShowCart}
               setNotes={setNotes}
               notes={notes}
