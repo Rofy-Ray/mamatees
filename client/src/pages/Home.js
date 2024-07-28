@@ -128,6 +128,7 @@ function Home({ cart, setCart, showCart, setShowCart, notes, setNotes, removeIte
                 <Cart
                   cart={cart}
                   updateQuantity={updateCartQuantity}
+                  removeItem={removeItem}
                   setShowCart={setShowCart}
                   setNotes={setNotes}
                   notes={notes}
