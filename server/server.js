@@ -278,9 +278,9 @@ app.post("/api/processSquarePayment", async (req, res) => {
     const replacer = (key, value) =>
       typeof value === "bigint" ? value.toString() : value;
 
-    console.log("Payment Response: ", response.result.payment);
-    checkouts.push({ ...response.result.payment, products: products, timestamp: Date.now() });
-    console.log("Checkouts List After Push: ", checkouts);
+    // console.log("Payment Response: ", response.result.payment);
+    // checkouts.push({ ...response.result.payment, products: products, timestamp: Date.now() });
+    // console.log("Checkouts List After Push: ", checkouts);
 
     res.json(JSON.parse(JSON.stringify(response, replacer)));
   } catch (error) {
@@ -339,23 +339,29 @@ app.post(
     const event = req.body;
 
     if (
-      event.type === "payment.updated" ||
+      // event.type === "payment.updated" ||
       event.type === "terminal.checkout.updated"
     ) {
       try {
         const object = event.data.object;
 
-        let status, id, processingFee;
-        if (event.type === "payment.updated") {
-          status = object.payment.status;
-          id = object.payment.id;
-          processingFee = object.payment.processing_fee;
-        } else if (event.type === "terminal.checkout.updated") {
-          status = object.checkout.status;
-          id = object.checkout.id;
-        }
+        let status, id;
+        status = object.checkout.status;
+        id = object.checkout.id;
+        // let status, id, processingFee;
+        // if (event.type === "payment.updated") {
+        //   status = object.payment.status;
+        //   id = object.payment.id;
+        //   processingFee = object.payment.processing_fee;
+        // } else if (event.type === "terminal.checkout.updated") {
+        //   status = object.checkout.status;
+        //   id = object.checkout.id;
+        // }
 
-        if ((processingFee || event.type === "terminal.checkout.updated") && status === "COMPLETED") {
+        if ((
+          // processingFee || 
+          event.type === "terminal.checkout.updated") 
+          && status === "COMPLETED") {
           const checkout = checkouts.find((c) => c.id === id);
 
           if (!checkout) {
