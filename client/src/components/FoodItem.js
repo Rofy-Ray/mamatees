@@ -16,6 +16,10 @@ function FoodItem({ item, addToCart }) {
     });
   };
 
+  const getAddToCartText = () => {
+    return item.type === "beverage" ? "Add to My Cup" : "Add to My Plate";
+  };
+
   return (
     <Card
       bg="dark"
@@ -58,7 +62,7 @@ function FoodItem({ item, addToCart }) {
             </Card.Text>
           </div>
           <Button variant="light" onClick={handleAddToCart}>
-            Add to My Plate
+            {getAddToCartText()}
           </Button>
         </div>
       </Card.Body>
