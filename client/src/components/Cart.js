@@ -60,11 +60,15 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes, removeItem }
   };
 
   const getMealText = (item) => {
+    if (item.type === "appetizer" || item.type === "dessert") {
+      return "";
+    }
     if (item.type === "beverage") {
       return item.isMeal ? "(Refill)" : "(Main Cup)";
     }
     return item.isMeal ? "(Meal)" : "(Sandwich)";
   };
+  
 
   return (
     <div
