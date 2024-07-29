@@ -110,7 +110,9 @@ function Dashboard() {
                                   : product.description}
                               </td>
                               <td>{product.quantity}</td>
-                              {product.isMeal && <td>Meal</td>}
+                              {product.isMeal && (
+                                <td>{product.type === "beverage" ? "Refill" : "Meal"}</td>
+                              )}
                             </tr>
                           ))}
                       </tbody>
