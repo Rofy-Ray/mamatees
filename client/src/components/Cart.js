@@ -59,6 +59,13 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes, removeItem }
     });
   };
 
+  const getMealText = (item) => {
+    if (item.type === "beverage") {
+      return item.isMeal ? "(Refill)" : "(Main Cup)";
+    }
+    return item.isMeal ? "(Meal)" : "(Sandwich)";
+  };
+
   return (
     <div
       className="cart"
@@ -90,7 +97,7 @@ function Cart({ cart, updateQuantity, setShowCart, setNotes, notes, removeItem }
                 </Col>
                 <Col xs={9} md={10} className="d-flex align-items-center">
                   <h5 className="mx-auto" style={{ fontSize: fontSize }}>
-                  {item.name} {item.isMeal ? '(Meal)' : '(Sandwich)'}
+                  {item.name} {getMealText(item)}
                   </h5>
                 </Col>
               </Row>

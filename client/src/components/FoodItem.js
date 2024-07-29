@@ -39,7 +39,14 @@ function FoodItem({ item, addToCart }) {
             }}
           >
             <Button variant="secondary" onClick={handleMeal}>
-              {isMeal ? "Sandwich Only" : "Make Meal"}
+              {isMeal
+                ? item.type === "beverage"
+                  ? "Main Cup"
+                  : "Sandwich Only"
+                : item.type === "beverage"
+                ? "Refill"
+                : "Make Meal"
+              }
             </Button>
           </div>
         )}

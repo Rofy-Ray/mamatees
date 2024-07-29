@@ -278,7 +278,9 @@ app.post("/api/processSquarePayment", async (req, res) => {
     const replacer = (key, value) =>
       typeof value === "bigint" ? value.toString() : value;
 
+    console.log("Payment Response: ", response.result.payment);
     checkouts.push({ ...response.result.payment, products: products, timestamp: Date.now() });
+    console.log("Checkouts List After Push: ", checkouts);
 
     res.json(JSON.parse(JSON.stringify(response, replacer)));
   } catch (error) {
@@ -319,7 +321,9 @@ app.post("/api/createCheckout", async (req, res) => {
     const replacer = (key, value) =>
       typeof value === "bigint" ? value.toString() : value;
 
+    console.log("Checkout Response: ", response.result.checkout);
     checkouts.push({ ...response.result.checkout, products: products, timestamp: Date.now() });
+    console.log("Checkouts List After Push: ", checkouts);
 
     res.json(JSON.parse(JSON.stringify(response, replacer)));
   } catch (error) {
@@ -356,6 +360,7 @@ app.post(
 
           if (!checkout) {
             console.error(`No checkout found with id: ${id}`);
+            console.log("Current Checkouts List: ", checkouts);
             return;
           }
 
